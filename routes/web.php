@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectPageController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TaskPageController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'Welcome')->name('home');
@@ -20,4 +21,8 @@ Route::middleware('auth')->group(function () {
 // Pagine Inertia (frontend), separate dalle rotte API JSON sopra.
 Route::prefix('app')->name('pages.')->middleware('auth')->group(function () {
     Route::resource('projects', ProjectPageController::class);
+    Route::resource('projects.tasks', TaskPageController::class)->except(['show'])->scoped();
+    Route::patch('projects/{project}/tasks/{task}/complete', [TaskPageController::class, 'complete'])
+        ->name('projects.tasks.complete')
+        ->scopeBindings();
 });
