@@ -5,7 +5,6 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-
 class UpdateProjectRequest extends FormRequest
 {
     /**
@@ -25,7 +24,7 @@ class UpdateProjectRequest extends FormRequest
     {
         return [
             'name' => 'sometimes|required|string|max:100',
-            'description' => 'sometimes|nullable|string'
+            'description' => 'sometimes|nullable|string',
         ];
     }
 }

@@ -4,13 +4,13 @@ namespace App\Providers;
 
 use App\Interfaces\ProjectRepositoryInterface;
 use App\Interfaces\TaskRepositoryInterface;
+use App\Repositories\ProjectRepository;
+use App\Repositories\TaskRepository;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
-use App\Repositories\ProjectRepository;
-use App\Repositories\TaskRepository;
 
 class AppServiceProvider extends ServiceProvider
 {

@@ -24,7 +24,7 @@ class StoreProjectRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:100',
-            'description' => 'nullable|string'
+            'description' => 'nullable|string',
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Enums\Status;
 use App\Interfaces\TaskRepositoryInterface;
 use App\Models\Task;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class TaskRepository implements TaskRepositoryInterface
@@ -31,9 +32,16 @@ class TaskRepository implements TaskRepositoryInterface
         return Task::findOrFail($id);
     }
 
-    public function getByProject(int $projectId): Collection
+    public function getByProject(int $projectId, array $filters = []): Collection
     {
-        return Task::where('project_id', $projectId)->get();
+        return Task::where('project_id', $projectId)
+            ->when($filters['status'] ?? null, function (Builder $query) use ($filters) {
+                $query->where('status', $filters['status']);
+            })
+            ->when($filters['priority'] ?? null, function (Builder $query) use ($filters) {
+                $query->where('priority', $filters['priority']);
+            })
+            ->get();
     }
 
     public function countIncompleteByProject(int $projectId): int

@@ -11,8 +11,7 @@ class TaskService
 {
     public function __construct(
         private TaskRepositoryInterface $taskRepository
-    ) {
-    }
+    ) {}
 
     public function create(int $projectId, array $data): Task
     {
@@ -55,8 +54,8 @@ class TaskService
         return $this->taskRepository->find($id);
     }
 
-    public function getByProject(int $projectId): Collection
+    public function getByProject(int $projectId, array $filters = []): Collection
     {
-        return $this->taskRepository->getByProject($projectId);
+        return $this->taskRepository->getByProject($projectId, $filters);
     }
 }

@@ -1,8 +1,10 @@
 <?php
+
 namespace Tests\Feature;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\User;
+
 use App\Models\Project;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ProjectTest extends TestCase
@@ -28,51 +30,51 @@ class ProjectTest extends TestCase
             'user_id' => $user->id,
         ]);
     }
+
     public function test_user_can_only_see_his_projects(): void
-{
-    $user = User::factory()->create();
-    $otherUser = User::factory()->create();
+    {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
 
-    $myProject = Project::factory()->create([
-        'user_id' => $user->id,
-    ]);
+        $myProject = Project::factory()->create([
+            'user_id' => $user->id,
+        ]);
 
-    $otherProject = Project::factory()->create([
-        'user_id' => $otherUser->id,
-    ]);
+        $otherProject = Project::factory()->create([
+            'user_id' => $otherUser->id,
+        ]);
 
-    $response = $this
-        ->actingAs($user)
-        ->getJson('/projects');
+        $response = $this
+            ->actingAs($user)
+            ->getJson('/projects');
 
-    $response->assertStatus(200);
+        $response->assertStatus(200);
 
-    $response->assertJsonFragment([
-        'id' => $myProject->id,
-    ]);
+        $response->assertJsonFragment([
+            'id' => $myProject->id,
+        ]);
 
-    $response->assertJsonMissing([
-        'id' => $otherProject->id,
-    ]);
+        $response->assertJsonMissing([
+            'id' => $otherProject->id,
+        ]);
     }
+
     public function test_user_can_see_his_own_project(): void
-{
-    $user = User::factory()->create();
+    {
+        $user = User::factory()->create();
 
-    $project = Project::factory()->create([
-        'user_id' => $user->id,
-    ]);
+        $project = Project::factory()->create([
+            'user_id' => $user->id,
+        ]);
 
-    $response = $this
-        ->actingAs($user)
-        ->getJson("/projects/{$project->id}");
+        $response = $this
+            ->actingAs($user)
+            ->getJson("/projects/{$project->id}");
 
-    $response->assertStatus(200);
+        $response->assertStatus(200);
 
-    $response->assertJsonFragment([
-        'id' => $project->id,
-    ]);
+        $response->assertJsonFragment([
+            'id' => $project->id,
+        ]);
     }
-
-
 }

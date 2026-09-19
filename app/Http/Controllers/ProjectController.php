@@ -13,8 +13,7 @@ class ProjectController extends Controller
 {
     public function __construct(
         private ProjectService $projectService
-    ) {
-    }
+    ) {}
 
     /**
      * Mostra tutti i progetti dell'utente autenticato.
