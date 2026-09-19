@@ -77,4 +77,104 @@ class ProjectTest extends TestCase
             'id' => $project->id,
         ]);
     }
+
+    public function test_owner_can_update_own_project(): void
+    {
+        $user = User::factory()->create();
+
+        $project = Project::factory()->create([
+            'user_id' => $user->id,
+            'name' => 'Nome originale',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->patchJson("/projects/{$project->id}", [
+                'name' => 'Nome aggiornato',
+            ]);
+
+        $response->assertOk();
+
+        $this->assertDatabaseHas('projects', [
+            'id' => $project->id,
+            'name' => 'Nome aggiornato',
+        ]);
+    }
+
+    public function test_user_cannot_update_another_users_project(): void
+    {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+
+        $otherProject = Project::factory()->create([
+            'user_id' => $otherUser->id,
+            'name' => 'Nome originale',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->patchJson("/projects/{$otherProject->id}", [
+                'name' => 'Nome intruso',
+            ]);
+
+        $response->assertForbidden();
+
+        $this->assertDatabaseHas('projects', [
+            'id' => $otherProject->id,
+            'name' => 'Nome originale',
+        ]);
+    }
+
+    public function test_owner_can_delete_own_project(): void
+    {
+        $user = User::factory()->create();
+
+        $project = Project::factory()->create([
+            'user_id' => $user->id,
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->deleteJson("/projects/{$project->id}");
+
+        $response->assertNoContent();
+
+        $this->assertDatabaseMissing('projects', [
+            'id' => $project->id,
+        ]);
+    }
+
+    public function test_user_cannot_delete_another_users_project(): void
+    {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+
+        $otherProject = Project::factory()->create([
+            'user_id' => $otherUser->id,
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->deleteJson("/projects/{$otherProject->id}");
+
+        $response->assertForbidden();
+
+        $this->assertDatabaseHas('projects', [
+            'id' => $otherProject->id,
+        ]);
+    }
+
+    public function test_creating_a_project_requires_a_name(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->postJson('/projects', [
+                'description' => 'Manca il nome',
+            ]);
+
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors('name');
+    }
 }
