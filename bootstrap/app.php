@@ -18,6 +18,11 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
+
+        // Render (e altre piattaforme PaaS) terminano l'HTTPS su un reverse
+        // proxy e inoltrano all'app in HTTP: senza fidarsi del proxy, Laravel
+        // genera URL http:// anche quando il sito è servito in https://.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
