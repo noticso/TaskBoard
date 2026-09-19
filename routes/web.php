@@ -4,9 +4,14 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectPageController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskPageController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'Welcome')->name('home');
+Route::get('/', function (Request $request) {
+    return $request->user()
+        ? redirect()->route('pages.projects.index')
+        : redirect()->route('login');
+})->name('home');
 
 require __DIR__.'/auth.php';
 
