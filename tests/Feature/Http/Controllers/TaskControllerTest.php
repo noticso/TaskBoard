@@ -285,4 +285,55 @@ class TaskControllerTest extends TestCase
 
         $this->assertDatabaseHas('tasks', ['id' => $task->id]);
     }
+
+    public function test_user_can_complete_a_task_of_own_project(): void
+    {
+        $user = User::factory()->create();
+        $project = Project::factory()->for($user)->create();
+        $task = Task::factory()->for($project)->create(['title' => 'Titolo originale']);
+
+        $response = $this
+            ->actingAs($user)
+            ->patchJson("/projects/{$project->id}/tasks/{$task->id}/complete");
+
+        $response->assertOk();
+
+        $this->assertDatabaseHas('tasks', [
+            'id' => $task->id,
+            'status' => Status::Completed->value,
+        ]);
+    }
+
+    public function test_user_cannot_complete_a_task_of_another_users_project(): void
+    {
+        $user = User::factory()->create();
+        $otherProject = Project::factory()->for(User::factory())->create();
+        $task = Task::factory()->for($otherProject)->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->patchJson("/projects/{$otherProject->id}/tasks/{$task->id}/complete");
+
+        $response->assertForbidden();
+
+        $this->assertDatabaseHas('tasks', ['id' => $task->id]);
+    }
+
+    public function test_completing_an_already_completed_task_returns_error(): void
+    {
+        $user = User::factory()->create();
+        $project = Project::factory()->for($user)->create();
+        $task = Task::factory()->for($project)->create(['title' => 'Titolo originale', 'status' => Status::Completed->value]);
+
+        $response = $this
+            ->actingAs($user)
+            ->patchJson("/projects/{$project->id}/tasks/{$task->id}/complete");
+
+        $response->assertUnprocessable();
+
+        $this->assertDatabaseHas('tasks', [
+            'id' => $task->id,
+            'status' => Status::Completed->value,
+        ]);
+    }
 }

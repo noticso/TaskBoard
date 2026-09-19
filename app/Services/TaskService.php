@@ -58,4 +58,17 @@ class TaskService
     {
         return $this->taskRepository->getByProject($projectId, $filters);
     }
+
+    public function complete(Task $task): Task
+    {
+        if (
+            $task->status === Status::Completed
+        ) {
+            throw new \InvalidArgumentException(
+                'Questa task è stata già completata.'
+            );
+        }
+
+        return $this->update($task, ['status' => Status::Completed->value]);
+    }
 }

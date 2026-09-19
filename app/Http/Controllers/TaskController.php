@@ -69,4 +69,13 @@ class TaskController extends Controller
 
         return response()->noContent();
     }
+
+    public function complete(Project $project, Task $task)
+    {
+        Gate::authorize('update', $task);
+
+        $completeTask = $this->taskService->complete($task);
+
+        return response()->json($completeTask);
+    }
 }
