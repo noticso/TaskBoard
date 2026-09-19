@@ -1,0 +1,56 @@
+databases:
+  - name: taskboard-db
+    plan: free
+    databaseName: taskboard
+    user: taskboard
+
+services:
+  - type: web
+    name: taskboard
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /up
+    envVars:
+      - key: APP_NAME
+        value: TaskBoard
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: APP_LOCALE
+        value: it
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: taskboard-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: taskboard-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: taskboard-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: taskboard-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: taskboard-db
+          property: password
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
