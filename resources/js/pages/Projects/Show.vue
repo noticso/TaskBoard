@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
 import { destroy, edit, index } from '@/routes/pages/projects';
+import { index as tasksIndex } from '@/routes/pages/projects/tasks';
 import type { Project } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 
@@ -45,5 +46,12 @@ function deleteProject() {
         <p class="mt-4 whitespace-pre-line text-gray-700">
             {{ project.description || 'Nessuna descrizione.' }}
         </p>
+
+        <Link
+            :href="tasksIndex(project.id).url"
+            class="mt-6 inline-block text-sm font-medium text-gray-900 hover:underline"
+        >
+            Vedi le task &rarr;
+        </Link>
     </AppLayout>
 </template>
